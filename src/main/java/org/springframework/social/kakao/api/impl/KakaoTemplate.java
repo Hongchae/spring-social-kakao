@@ -1,7 +1,9 @@
 package org.springframework.social.kakao.api.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.social.kakao.api.Kakao;
 import org.springframework.social.kakao.api.StoryOperations;
+import org.springframework.social.kakao.api.TalkOperations;
 import org.springframework.social.kakao.api.UserOperations;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
@@ -11,13 +13,14 @@ import org.springframework.util.MultiValueMap;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.Map;
 
 public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
-    private StoryOperations storyOperations;
-
     private UserOperations userOperations;
+
+    private TalkOperations talkOperations;
+
+    private StoryOperations storyOperations;
 
     public KakaoTemplate(String accessToken) {
         super(accessToken);
@@ -34,6 +37,11 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
         return storyOperations;
     }
 
+    @Override
+    public TalkOperations talkOperations() {
+        return talkOperations;
+    }
+
     public <T> T get(URI uri, Class<T> resultType) {
         return getRestTemplate().getForObject(uri, resultType);
     }
@@ -47,50 +55,45 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
     }
 
     @Override
-    public Map<String, Integer> fetchAccountId() {
-        return get(URIBuilder.fromUri(KAKAO_API_URL + "user/me").build(), Map.class);
+    public JsonNode fetchAccountId() {
+        return get(URIBuilder.fromUri(KAKAO_API_URL + "user/me").build(), JsonNode.class);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Map<String, Boolean> fetchIsStoryUser() {
-        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/isstoryuser").build(), Map.class);
+    public JsonNode fetchIsStoryUser() {
+        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/isstoryuser").build(), JsonNode.class);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Map<String, String> fetchStoryProfile() {
-        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/profile").build(), Map.class);
+    public JsonNode fetchStoryProfile() {
+        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/profile").build(), JsonNode.class);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Map<String, String> fetchTalkProfile() {
-        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/talk/profile").build(), Map.class);
+    public JsonNode fetchTalkProfile() {
+        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/talk/profile").build(), JsonNode.class);
     }
 
     @Override
-    public String fetchLinkInfo(String url) {
-        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/linkinfo?url=" + url).build(), String.class);
+    public JsonNode fetchLinkInfo(String url) {
+        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/linkinfo?url=" + url).build(), JsonNode.class);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Map<String, String> postNote(String content) {
+    public JsonNode postNote(String content) {
         LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>();
         parameterMap.put("content", Collections.singletonList(content));
 
-        return post(URIBuilder.fromUri(KAKAO_API_URL + "api/story/post/note").build(), parameterMap, Map.class);
+        return post(URIBuilder.fromUri(KAKAO_API_URL + "api/story/post/note").build(), parameterMap, JsonNode.class);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Map<String, String> postLink(String content, String linkInfo) {
+    public JsonNode postLink(String content, String linkInfo) {
         LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>();
         parameterMap.put("content", Collections.singletonList(content));
         parameterMap.put("link_info", Collections.singletonList(linkInfo));
 
-        return post(URIBuilder.fromUri(KAKAO_API_URL + "api/story/post/link").build(), parameterMap, Map.class);
+        return post(URIBuilder.fromUri(KAKAO_API_URL + "api/story/post/link").build(), parameterMap, JsonNode.class);
     }
 
     @Override
@@ -106,5 +109,6 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
     private void initSubApis() {
         userOperations = new UserTemplate(this, isAuthorized());
         storyOperations = new StoryTemplate(this, isAuthorized());
+        talkOperations = new TalkTemplate(this, isAuthorized());
     }
 }

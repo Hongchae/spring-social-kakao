@@ -15,7 +15,7 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
     @Override
     public boolean test(Kakao kakao) {
         try {
-            kakao.userOperations().isStoryUser();
+            kakao.storyOperations().isStoryUser();
             return true;
         } catch(ApiException e) {
             return false;
@@ -41,10 +41,10 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
 
     private KakaoProfile fetchPrimaryProfile(Kakao kakao) {
         KakaoProfile profile;
-        if(kakao.userOperations().isStoryUser()) {
-            profile = kakao.userOperations().getStoryUserProfile();
+        if(kakao.storyOperations().isStoryUser()) {
+            profile = kakao.storyOperations().getProfile();
         } else {
-            profile = kakao.userOperations().getTalkUserProfile();
+            profile = kakao.talkOperations().getProfile();
         }
 
         Integer accountId = kakao.userOperations().getAccountId();
@@ -55,6 +55,6 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
 
     @Override
     public void updateStatus(Kakao kakao, String message) {
-        kakao.storyOperations().postStory(message, null);
+        kakao.storyOperations().postNote(message);
     }
 }

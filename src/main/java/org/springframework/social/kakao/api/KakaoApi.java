@@ -1,23 +1,23 @@
 package org.springframework.social.kakao.api;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface KakaoApi {
     String KAKAO_API_URL = "https://kapi.kakao.com/v1/";
 
-    Map<String, Integer> fetchAccountId();
+    JsonNode fetchAccountId();
 
-    Map<String, Boolean> fetchIsStoryUser();
+    JsonNode fetchIsStoryUser();
 
-    Map<String, String> fetchStoryProfile();
+    JsonNode fetchStoryProfile();
 
-    Map<String, String> fetchTalkProfile();
+    JsonNode fetchTalkProfile();
 
-    String fetchLinkInfo(String url);
+    JsonNode fetchLinkInfo(String url);
 
-    Map<String, String> postNote(String content);
+    JsonNode postNote(String content);
 
-    Map<String, String> postLink(String content, String url);
+    JsonNode postLink(String content, String url);
 
     void deleteStory(String id);
 }

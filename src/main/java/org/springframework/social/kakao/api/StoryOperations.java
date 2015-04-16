@@ -1,9 +1,15 @@
 package org.springframework.social.kakao.api;
 
 public interface StoryOperations {
+    boolean isStoryUser();
+
+    KakaoProfile getProfile();
+
     String getLinkInfo(String url);
 
-    String postStory(String content, String url);
+    String postNote(String content);
 
-    void deleteStory(String storyId);
+    String postLink(String content, String url);
+
+    void delete(String storyId);
 }
