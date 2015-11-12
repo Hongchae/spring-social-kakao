@@ -1,7 +1,8 @@
 package org.springframework.social.kakao.api.impl;
 
-
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.social.kakao.api.KakaoApi;
+import org.springframework.social.kakao.api.KakaoProfile;
 import org.springframework.social.kakao.api.UserOperations;
 
 public class UserTemplate extends AbstractKakaoOperations implements UserOperations {
@@ -16,5 +17,36 @@ public class UserTemplate extends AbstractKakaoOperations implements UserOperati
     @Override
     public Integer getAccountId() {
         return kakaoApi.fetchAccountId().get("id").asInt();
+    }
+
+    @Override
+    public boolean isStoryUser() {
+        requireAuthorization();
+        return kakaoApi.fetchIsStoryUser().get("isStoryUser").asBoolean();
+    }
+
+    @Override
+    public KakaoProfile getStoryUserProfile() {
+        requireAuthorization();
+        JsonNode profileNode = kakaoApi.fetchStoryProfile();
+
+        final KakaoProfile profile = new KakaoProfile();
+        profile.setUsername(profileNode.get("nickName").asText());
+        profile.setProfileUrl(profileNode.get("permalink").asText());
+        profile.setImageUrl(profileNode.get("profileImageURL").asText());
+
+        return profile;
+    }
+
+    @Override
+    public KakaoProfile getTalkUserProfile() {
+        requireAuthorization();
+        JsonNode profileNode = kakaoApi.fetchTalkProfile();
+
+        final KakaoProfile profile = new KakaoProfile();
+        profile.setUsername(profileNode.get("nickName").asText());
+        profile.setImageUrl(profileNode.get("profileImageURL").asText());
+
+        return profile;
     }
 }

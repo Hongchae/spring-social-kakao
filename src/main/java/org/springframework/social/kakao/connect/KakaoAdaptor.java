@@ -1,5 +1,6 @@
 package org.springframework.social.kakao.connect;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.social.ApiException;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
@@ -7,6 +8,7 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.kakao.api.Kakao;
 import org.springframework.social.kakao.api.KakaoProfile;
+import org.springframework.web.client.HttpClientErrorException;
 
 public class KakaoAdaptor implements ApiAdapter<Kakao> {
 
@@ -15,7 +17,7 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
     @Override
     public boolean test(Kakao kakao) {
         try {
-            kakao.storyOperations().isStoryUser();
+            kakao.userOperations().isStoryUser();
             return true;
         } catch(ApiException e) {
             return false;
@@ -40,14 +42,25 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
     }
 
     private KakaoProfile fetchPrimaryProfile(Kakao kakao) {
-        KakaoProfile profile;
-        if(kakao.storyOperations().isStoryUser()) {
-            profile = kakao.storyOperations().getProfile();
+        KakaoProfile profile = null;
+
+        if(kakao.userOperations().isStoryUser()) {
+            profile = kakao.userOperations().getStoryUserProfile();
         } else {
-            profile = kakao.talkOperations().getProfile();
+            try {
+                profile = kakao.userOperations().getTalkUserProfile();
+            } catch (HttpClientErrorException e) {
+                // ignore
+            }
         }
 
         Integer accountId = kakao.userOperations().getAccountId();
+
+        if(profile == null) {
+            profile = new KakaoProfile();
+            profile.setUsername("카카오-" + RandomStringUtils.randomAlphanumeric(5));
+        }
+
         profile.setId(Integer.toString(accountId));
 
         return profile;
@@ -55,6 +68,6 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
 
     @Override
     public void updateStatus(Kakao kakao, String message) {
-        kakao.storyOperations().postNote(message);
+        kakao.storyOperations().postStory(message, null);
     }
 }

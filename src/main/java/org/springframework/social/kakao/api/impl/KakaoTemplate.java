@@ -1,9 +1,10 @@
 package org.springframework.social.kakao.api.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.social.kakao.api.Kakao;
 import org.springframework.social.kakao.api.StoryOperations;
-import org.springframework.social.kakao.api.TalkOperations;
 import org.springframework.social.kakao.api.UserOperations;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
@@ -11,16 +12,18 @@ import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collections;
 
 public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
-    private UserOperations userOperations;
-
-    private TalkOperations talkOperations;
+    private static final Logger logger = LoggerFactory.getLogger(KakaoTemplate.class);
 
     private StoryOperations storyOperations;
+
+    private UserOperations userOperations;
 
     public KakaoTemplate(String accessToken) {
         super(accessToken);
@@ -37,17 +40,13 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
         return storyOperations;
     }
 
-    @Override
-    public TalkOperations talkOperations() {
-        return talkOperations;
-    }
-
     public <T> T get(URI uri, Class<T> resultType) {
         return getRestTemplate().getForObject(uri, resultType);
     }
 
     public <T> T post(URI uri, MultiValueMap<String, String> data, Class<T> resultType) {
-        return getRestTemplate().postForObject(uri, new LinkedMultiValueMap<String, String>(data), resultType);
+        logger.debug("Kakao template post uri: " + uri.toString());
+        return getRestTemplate().postForObject(uri, new LinkedMultiValueMap<>(data), resultType);
     }
 
     public void delete(URI uri) {
@@ -76,12 +75,18 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
     @Override
     public JsonNode fetchLinkInfo(String url) {
-        return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/linkinfo?url=" + url).build(), JsonNode.class);
+        try {
+            String encodedUrl = URLEncoder.encode(url, "UTF-8");
+            return get(URIBuilder.fromUri(KAKAO_API_URL + "api/story/linkinfo?url=" + encodedUrl).build(), JsonNode.class);
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+
     }
 
     @Override
     public JsonNode postNote(String content) {
-        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>();
+        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
         parameterMap.put("content", Collections.singletonList(content));
 
         return post(URIBuilder.fromUri(KAKAO_API_URL + "api/story/post/note").build(), parameterMap, JsonNode.class);
@@ -89,7 +94,7 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
     @Override
     public JsonNode postLink(String content, String linkInfo) {
-        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>();
+        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
         parameterMap.put("content", Collections.singletonList(content));
         parameterMap.put("link_info", Collections.singletonList(linkInfo));
 
@@ -109,6 +114,5 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
     private void initSubApis() {
         userOperations = new UserTemplate(this, isAuthorized());
         storyOperations = new StoryTemplate(this, isAuthorized());
-        talkOperations = new TalkTemplate(this, isAuthorized());
     }
 }
