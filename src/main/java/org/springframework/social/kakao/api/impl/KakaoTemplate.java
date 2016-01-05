@@ -54,7 +54,7 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
     }
 
     @Override
-    public JsonNode fetchAccountId() {
+    public JsonNode fetchUserId() {
         return get(URIBuilder.fromUri(KAKAO_API_URL + "user/me").build(), JsonNode.class);
     }
 

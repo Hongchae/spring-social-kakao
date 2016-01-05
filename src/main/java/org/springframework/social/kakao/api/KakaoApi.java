@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface KakaoApi {
     String KAKAO_API_URL = "https://kapi.kakao.com/v1/";
 
-    JsonNode fetchAccountId();
+    JsonNode fetchUserId();
 
     JsonNode fetchIsStoryUser();
 

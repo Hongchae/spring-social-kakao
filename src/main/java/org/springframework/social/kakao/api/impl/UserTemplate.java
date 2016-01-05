@@ -15,8 +15,8 @@ public class UserTemplate extends AbstractKakaoOperations implements UserOperati
     }
 
     @Override
-    public Integer getAccountId() {
-        return kakaoApi.fetchAccountId().get("id").asInt();
+    public Integer getUserId() {
+        return kakaoApi.fetchUserId().get("id").asInt();
     }
 
     @Override

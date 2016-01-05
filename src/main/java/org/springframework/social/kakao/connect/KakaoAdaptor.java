@@ -54,7 +54,7 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
             }
         }
 
-        Integer accountId = kakao.userOperations().getAccountId();
+        Integer accountId = kakao.userOperations().getUserId();
 
         if(profile == null) {
             profile = new KakaoProfile();

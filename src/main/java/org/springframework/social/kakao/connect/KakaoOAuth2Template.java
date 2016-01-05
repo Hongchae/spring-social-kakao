@@ -7,6 +7,4 @@ public class KakaoOAuth2Template extends OAuth2Template {
         super(clientId, "", "https://kauth.kakao.com/oauth/authorize", "https://kauth.kakao.com/oauth/token");
         setUseParametersForClientAuthentication(true);
     }
-
-
 }
