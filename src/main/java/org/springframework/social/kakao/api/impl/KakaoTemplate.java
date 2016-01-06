@@ -46,7 +46,7 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
     public <T> T post(URI uri, MultiValueMap<String, String> data, Class<T> resultType) {
         logger.debug("Kakao template post uri: " + uri.toString());
-        return getRestTemplate().postForObject(uri, new LinkedMultiValueMap<>(data), resultType);
+        return getRestTemplate().postForObject(uri, new LinkedMultiValueMap<String, String>(data), resultType);
     }
 
     public void delete(URI uri) {
@@ -86,7 +86,7 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
     @Override
     public JsonNode postNote(String content) {
-        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>();
         parameterMap.put("content", Collections.singletonList(content));
 
         return post(URIBuilder.fromUri(KAKAO_API_URL + "api/story/post/note").build(), parameterMap, JsonNode.class);
@@ -94,7 +94,7 @@ public class KakaoTemplate extends AbstractOAuth2ApiBinding implements Kakao {
 
     @Override
     public JsonNode postLink(String content, String linkInfo) {
-        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>();
         parameterMap.put("content", Collections.singletonList(content));
         parameterMap.put("link_info", Collections.singletonList(linkInfo));
 
