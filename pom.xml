@@ -5,7 +5,7 @@
 
     <groupId>org.springframework.social</groupId>
     <artifactId>spring-social-kakao</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <name>spring-social-kakao</name>

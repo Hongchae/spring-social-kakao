@@ -30,6 +30,10 @@ public class UserTemplate extends AbstractKakaoOperations implements UserOperati
         requireAuthorization();
         JsonNode profileNode = kakaoApi.fetchStoryProfile();
 
+        if (profileNode.has("code")) {
+            return null;
+        }
+
         final KakaoProfile profile = new KakaoProfile();
         profile.setUsername(profileNode.get("nickName").asText());
         profile.setProfileUrl(profileNode.get("permalink").asText());
@@ -42,6 +46,10 @@ public class UserTemplate extends AbstractKakaoOperations implements UserOperati
     public KakaoProfile getTalkUserProfile() {
         requireAuthorization();
         JsonNode profileNode = kakaoApi.fetchTalkProfile();
+
+        if (profileNode.has("code")) {
+            return null;
+        }
 
         final KakaoProfile profile = new KakaoProfile();
         profile.setUsername(profileNode.get("nickName").asText());
