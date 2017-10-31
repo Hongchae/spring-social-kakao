@@ -46,14 +46,18 @@ public class KakaoAdaptor implements ApiAdapter<Kakao> {
     }
 
     private KakaoProfile fetchPrimaryProfile(Kakao kakao) {
-        KakaoProfile profile = kakao.userOperations().getTalkUserProfile();
+        KakaoProfile profile = null;
+
+        try {
+            profile = kakao.userOperations().getTalkUserProfile();
+        } catch (Exception ignore) {}
 
         if (profile == null) {
             if (kakao.userOperations().isStoryUser()) {
                 profile = kakao.userOperations().getStoryUserProfile();
             } else {
                 profile = new KakaoProfile();
-                profile.setUsername("카카오-" + RandomStringUtils.randomAlphanumeric(5));
+                profile.setUsername("Kakao-" + RandomStringUtils.randomAlphanumeric(5));
             }
         }
 
